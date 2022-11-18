@@ -64,3 +64,5 @@ app.post("/api/file/upload", upload.single('file'), (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => console.log(`http://localhost:${process.env.PORT || 3000}/`));
+
+module.exports = app;
