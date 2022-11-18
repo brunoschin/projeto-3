@@ -34,9 +34,8 @@ app.get("/api/file", verifyJWT, getFile);
 
 app.post("/api/user/register", upload.single('file'), (req, res) => {
     const { name, email, password } = req.body
-    console.log(req.file.id)
 
-    new User(name, email, password, req.file.id).register()
+    new User(name, email, password, req.file ? req.file.id : undefined).register()
         .then((result) => {
             res.status(200).json({ user: result, message: "Usuário registrado com sucesso." })
         })
@@ -46,7 +45,7 @@ app.post("/api/user/register", upload.single('file'), (req, res) => {
 app.post("/api/user/login", (req, res) => {
     const { email, password } = req.body
 
-    new User(null, email, password).login()
+    new User(undefined, email, password).login()
         .then((result) => {
             res.status(200).json({
                 user: result,
