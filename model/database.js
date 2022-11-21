@@ -59,43 +59,48 @@ async function deleteMany(collection, query) {
     return result;
 
 }
+
 async function getFile(req, res) {
-    const name = req.body.name || req.query.name || req.params.name
-    const id = req.body._id || req.query._id || req.params._id
-    const _id = new ObjectId(id)
-    if (!name && !_id) {
-        res.status(400).send({ message: "É necessário informar o nome ou _id do arquivo." })
-        return;
-    }
-    getOne('File.files', id ? { _id } : { filename: name }).then((result) => {
-        if (result.length == 0) {
-            res.status(404).send({ message: "Arquivo não encontrado." })
+    try {
+        const name = req.body.name || req.query.name || req.params.name
+        const id = req.body._id || req.query._id || req.params._id
+        const _id = new ObjectId(id)
+        if (!name && !_id) {
+            res.status(400).send({ message: "É necessário informar o nome ou _id do arquivo." })
             return;
         }
-        const file = result[0]
-        const contentType = file.filename.split('.')[1]
-        res.contentType(contentType);
-    }).finally(() => {
-
-        const bucket = new GridFSBucket(db, {
-            bucketName: "File",
-        });
-
-        return new Promise(() => {
-            let downloadStream = id ? bucket.openDownloadStream(_id) : bucket.openDownloadStreamByName(name);
-            downloadStream.on("data", function (data) {
-                return res.status(200).write(data);
+        getOne('File.files', id ? { _id } : { filename: name }).then((result) => {
+            if (result.length == 0) {
+                res.status(404).send({ message: "Arquivo não encontrado." })
+                return;
+            }
+            const file = result[0]
+            const contentType = file.filename.split('.')[1]
+            res.contentType(contentType);
+        }).finally(() => {
+            const bucket = new GridFSBucket(db, {
+                bucketName: "File",
             });
 
-            downloadStream.on("error", function (err) {
-                return res.status(404).send({ message: "Cannot download the Image!" });
-            });
+            return new Promise(() => {
+                let downloadStream = id ? bucket.openDownloadStream(_id) : bucket.openDownloadStreamByName(name);
+                downloadStream.on("data", function (data) {
+                    return res.status(200).write(data);
+                });
 
-            downloadStream.on("end", () => {
-                return res.end();
-            });
+                downloadStream.on("error", function (err) {
+                    return res.status(404).send({ message: "Cannot download the Image!" });
+                });
+
+                downloadStream.on("end", () => {
+                    return res.end();
+                });
+            })
+
         })
-    })
+    } catch (err) {
+        return res.status(500).send({ message: "Erro ao buscar arquivo." })
+    }
 }
 
 const storage = new GridFsStorage({
@@ -112,6 +117,7 @@ const storage = new GridFsStorage({
 });
 
 const upload = multer({ storage });
+
 module.exports = {
     insertOne,
     insertMany,

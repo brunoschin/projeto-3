@@ -42,7 +42,7 @@ input {
     top: 15%;
     left: calc(50% - 250px);
     width: 500px;
-    height: 500px;
+    height: fit-content;
     background-color: #f0f0f0;
     display: flex;
     flex-direction: column;
@@ -109,7 +109,7 @@ input {
 
 .geralError {
     position: absolute;
-    top: 190px;
+    bottom: 120px;
     color: red;
 }
 
@@ -163,7 +163,7 @@ input {
     font-weight: 400;
     letter-spacing: 1px;
     margin-left: 10px;
-    width: 100px;
+    width: 230px;
 }
 
 .accountContainer button {
@@ -190,6 +190,7 @@ input {
 
 .modal .modal-content-body .modal-buttons {
     margin-top: 60px;
+    margin-bottom: 60px;
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -1531,6 +1532,15 @@ footer .legals .disclaimer {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
+.modalImagePreview {
+    height: 120px;
+    width: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #fff;
+    margin-top: 2rem;
+}
+
 .thumb .name {
     font-size: 16px;
     font-weight: 600;
@@ -1789,6 +1799,8 @@ footer .legals .disclaimer {
         background-size: cover;
         filter: brightness(0.5);
     }
+
+
 
     .text-video-overlay h1 {
         font-size: 48px;

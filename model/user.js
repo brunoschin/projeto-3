@@ -10,6 +10,24 @@ class User {
         this.password = password;
         this.profilePicture = profilePicture;
     }
+
+    async getUser(_id) {
+        try {
+            if (!_id) {
+                throw new Error('ID inválido.');
+            }
+            const user = await Database.getOne(collection, { _id });
+            if (user.length == 0) {
+                throw new Error('Usuário não encontrado.');
+            }
+            delete user[0].password;
+            delete user[0]._id;
+            return user[0];
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
+
     async register() {
         try {
             if (!this.name) {

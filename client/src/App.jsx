@@ -7,7 +7,7 @@ import Modal from './Modal';
 export default function App() {
 	const token = localStorage.getItem('token')
 	const [logged, setLogged] = useState(token ? true : false);
-	const [modal, setModal] = useState(false);
+	const [modal, setModal] = useState(0);
 	return (
 		<div className="App">
 			<Header {...{ logged, setLogged, modal, setModal }} />

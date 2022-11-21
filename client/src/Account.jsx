@@ -1,22 +1,33 @@
 import { useEffect, useState } from "react";
 
 export default function Account(props) {
-    const id = localStorage.getItem('token')?.replace('QpwL5tke4Pnpja7X', '');
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
+
     const [user, setUser] = useState({});
     useEffect(() => {
-        fetch(`https://reqres.in/api/users/${id}`)
+        fetch(`api/user/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/JSON',
+                'x-access-token': token
+            },
+            body: JSON.stringify({ email })
+        })
             .then(response => response.json())
             .then(data => {
-                setUser(data.data)
+                setUser(data.user)
             })
-    }, [id])
+    }, [email, token])
+
     if (props.logged && user) {
         return <>
             <div className="accountContainer">
-                <span>{user.first_name} {user.last_name}</span>
-                <img src={user.avatar} alt="avatar" />
+                <span>{user.name}</span>
+                <img src={`api/file/id/${user.profilePicture}`} alt="avatar" />
                 <button type="button" onClick={() => {
                     localStorage.removeItem('token');
+                    localStorage.removeItem('email');
                     props.setLogged(false);
                 }}>Sair</button>
             </div>
@@ -24,7 +35,9 @@ export default function Account(props) {
     } else {
         return <>
             <button className="header-mid-container-button"
-                onClick={() => props.setModal(!props.modal)}>Entrar</button>
+                onClick={() => props.setModal(1)}>Entrar</button>
+            <button className="header-mid-container-button"
+                onClick={() => props.setModal(2)}>Registrar</button>
             <div className="header-grey-buttons">
                 <button>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
