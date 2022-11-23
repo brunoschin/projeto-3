@@ -22,7 +22,7 @@ function verifyJWT(req, res, next) {
     });
 }
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public/')));
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
@@ -49,9 +49,9 @@ app.post("/api/user", verifyJWT, async (req, res) => {
 });
 
 app.post("/api/user/register", upload.single('file'), (req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, password, role } = req.body
 
-    new User(name, email, password, req.file ? req.file.id : undefined).register()
+    new User(name, email, password, req.file ? req.file.id : undefined, role).register()
         .then((result) => {
             delete result._id
             res.status(200).json({ user: result, message: "Usuário registrado com sucesso." })

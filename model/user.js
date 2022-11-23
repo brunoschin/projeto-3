@@ -3,12 +3,13 @@ const Database = require('./database');
 const collection = "User";
 
 class User {
-    constructor(name, email, password, profilePicture) {
+    constructor(name, email, password, profilePicture, role) {
         this._id = null;
         this.name = name;
         this.email = email;
         this.password = password;
         this.profilePicture = profilePicture;
+        this.role = role;
     }
 
     async getUser(_id) {
@@ -39,8 +40,8 @@ class User {
             if (!this.password) {
                 throw new Error('Senha inválida.');
             }
-            if (this.password.length < 5) {
-                throw new Error('Senha muito curta. Mínimo de 5 caracteres.');
+            if (this.password.length < 3) {
+                throw new Error('Senha muito curta. Mínimo de 3 caracteres.');
             }
             const user = await Database.getOne(collection, { email: this.email });
             if (user.length != 0) {
