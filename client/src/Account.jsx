@@ -24,7 +24,7 @@ export default function Account(props) {
         return <>
             <div className="accountContainer">
                 <span>{user.name}</span>
-                <img src={`api/file/id/${user.profilePicture}`} alt="avatar" />
+                <img src={user.profilePicture ? `api/file/id/${user.profilePicture}` : '/images/profile-pic-placeholder.webp'} alt="avatar" />
                 <button type="button" onClick={() => {
                     localStorage.removeItem('token');
                     localStorage.removeItem('email');

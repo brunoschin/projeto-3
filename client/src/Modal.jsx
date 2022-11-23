@@ -6,10 +6,12 @@ export default function Modal(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [image, setImage] = useState('');
+    const [userType, setUserType] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const [imageObject, setImageObject] = useState(null);
     const [nameError, setNameError] = useState(false);
     const [passError, setPassError] = useState(false);
+    const [setSucessRegister, setSetSucessRegister] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('O email deve ser válido');
@@ -220,6 +222,22 @@ export default function Modal(props) {
                 } />
                 {imageError && <div>Selecione uma imagem de perfil</div>}
             </div>
+
+            <div className="modalInput radio" >
+                <label>
+                    <input type="radio" value="user" checked={userType === 'user'} onChange={e => {
+                        setUserType(e.target.value)
+                    }} />
+                    Usuário
+                </label>
+                <label>
+                    <input type="radio" value="admin" checked={userType === 'admin'} onChange={e => {
+                        setUserType(e.target.value)
+                    }} />
+                    Administrador
+                </label>
+            </div>
+
             {error && <div className="geralError">{errorMessage}</div>}
             <div className="modal-buttons">
                 <button onClick={async () => {
@@ -234,12 +252,20 @@ export default function Modal(props) {
                         return;
                     }
                     if (!imageFile) {
+                        setError(true)
+                        setErrorMessage('Selecione uma imagem de perfil')
+                        return;
+                    }
+                    if (userType === '') {
+                        setError(true)
+                        setErrorMessage('Selecione um tipo de usuário')
                         return;
                     }
                     var formData = new FormData();
                     formData.append('name', name);
                     formData.append('email', email);
                     formData.append('password', password);
+                    formData.append('role', userType);
                     formData.append('file', imageFile);
                     const response = await fetch('api/user/register', {
                         method: 'POST',
@@ -248,6 +274,7 @@ export default function Modal(props) {
                         body: formData
                     })
                     const data = await response.json()
+                    console.log(data)
                     if (data.error) {
                         setError(true)
                         setErrorMessage(data.error)
@@ -260,9 +287,21 @@ export default function Modal(props) {
                         localStorage.setItem('email', email)
                     }
                     reset()
+                    setSetSucessRegister(true)
                 }} >Registrar</button>
-                {/* <button>Esqueci minha senha</button> */}
             </div>
+            {setSucessRegister &&
+                <div className="modalSucessRegister">
+                    <div className="modalSucessRegisterContent">
+                        <div className="modalSucessRegisterContentHeader">
+                            <h1>Conta criada com sucesso!</h1>
+                            <button onClick={() => {
+                                props.setModal(1)
+                                setSetSucessRegister(false)
+                            }}>Login</button>
+                        </div>
+                    </div>
+                </div>}
         </div>
     </div > : <></>
 }
