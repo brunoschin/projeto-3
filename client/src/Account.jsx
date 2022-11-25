@@ -6,18 +6,20 @@ export default function Account(props) {
 
     const [user, setUser] = useState({});
     useEffect(() => {
-        fetch(`api/user/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/JSON',
-                'x-access-token': token
-            },
-            body: JSON.stringify({ email })
-        })
-            .then(response => response.json())
-            .then(data => {
-                setUser(data.user)
+        if (email && token) {
+            fetch(`api/user/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/JSON',
+                    'x-access-token': token
+                },
+                body: JSON.stringify({ email })
             })
+                .then(response => response.json())
+                .then(data => {
+                    setUser(data.user)
+                })
+        }
     }, [email, token])
 
     if (props.logged && user) {
