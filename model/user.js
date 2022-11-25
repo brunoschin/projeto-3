@@ -17,7 +17,7 @@ class User {
             if (!_id) {
                 throw new Error('ID inválido.');
             }
-            const user = await Database.getOne(collection, { _id });
+            const user = await Database.get(collection, { _id });
             if (user.length == 0) {
                 throw new Error('Usuário não encontrado.');
             }
@@ -43,7 +43,7 @@ class User {
             if (this.password.length < 3) {
                 throw new Error('Senha muito curta. Mínimo de 3 caracteres.');
             }
-            const user = await Database.getOne(collection, { email: this.email });
+            const user = await Database.get(collection, { email: this.email });
             if (user.length != 0) {
                 throw new Error('Email já cadastrado.');
             }
@@ -67,7 +67,7 @@ class User {
             if (!this.password) {
                 throw new Error('Senha inválida.');
             }
-            const user = await Database.getOne(collection, { email: this.email });
+            const user = await Database.get(collection, { email: this.email });
             if (user.length == 0) {
                 throw new Error('Email não cadastrado.');
             }

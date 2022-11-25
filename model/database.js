@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion, GridFSBucket, ObjectId } = require('mongodb');
 const { GridFsStorage } = require("multer-gridfs-storage");
 const multer = require('multer');
+const { query } = require('express');
 
 const url = 'mongodb+srv://MdbAdmin:uakCmo8W7bQcVlVI@cluster0.nrrlvmq.mongodb.net/Projeto-3'
 const uri = "mongodb+srv://MdbAdmin:uakCmo8W7bQcVlVI@cluster0.nrrlvmq.mongodb.net/?retryWrites=true&w=majority";
@@ -18,7 +19,7 @@ async function insertMany(collection, data) {
     return result;
 }
 
-async function getOne(collection, query) {
+async function get(collection, query) {
     const cursor = db.collection(collection).find(query);
     const results = await cursor.toArray();
     return results;
@@ -69,7 +70,7 @@ async function getFile(req, res) {
             res.status(400).send({ message: "É necessário informar o nome ou _id do arquivo." })
             return;
         }
-        getOne('File.files', id ? { _id } : { filename: name }).then((result) => {
+        get('File.files', id ? { _id } : { filename: name }).then((result) => {
             if (result.length == 0) {
                 res.status(404).send({ message: "Arquivo não encontrado." })
                 return;
@@ -121,7 +122,7 @@ const upload = multer({ storage });
 module.exports = {
     insertOne,
     insertMany,
-    getOne,
+    get,
     getAll,
     updateOne,
     updateMany,

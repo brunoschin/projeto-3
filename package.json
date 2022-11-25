@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "react": "cd ./client/ && npm start",
+    "build": "rmdir /s /q public && cd ./client/ && npm run build && move build ../ && cd .. && ren build public"
   },
   "keywords": [],
   "author": "",

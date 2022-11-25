@@ -7,7 +7,9 @@ const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 
 const User = require('./model/user')
-const { getFile, upload } = require('./model/database')
+const Posts = require('./model/posts')
+const { getFile, upload } = require('./model/database');
+const Post = require('./model/posts');
 
 const SECRET = 'secret';
 function verifyJWT(req, res, next) {
@@ -16,7 +18,6 @@ function verifyJWT(req, res, next) {
 
     jwt.verify(token, SECRET, function (err, decoded) {
         if (err) return res.status(500).json({ auth: false, message: 'Falha ao autenticar token.' });
-
         req.userId = decoded.id;
         next();
     });
@@ -80,7 +81,23 @@ app.post("/api/file/upload", upload.single('file'), (req, res) => {
     const { name, site } = req.body;
     res.json({ name, site });
 });
-
+app.get("/api/my-posts", verifyJWT, async (req, res) => {
+    try {
+        const posts = await new Posts().getPostsByUser(req.userId);
+        res.status(200).json({ posts });
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+});
+app.post("/api/post", verifyJWT, upload.single('file'), async (req, res) => {
+    const { title, description } = req.body;
+    try {
+        const post = await new Posts(title, description, req.file ? req.file.id : undefined, req.file ? req.file.filename : undefined, req.userId).createPost();
+        res.status(200).json({ post });
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+});
 app.listen(process.env.PORT || 3001, () => console.log(`http://localhost:${process.env.PORT || 3001}/`));
 
 module.exports = app;
