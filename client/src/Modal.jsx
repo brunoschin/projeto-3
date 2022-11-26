@@ -241,7 +241,6 @@ export default function Modal(props) {
             {error && <div className="geralError">{errorMessage}</div>}
             <div className="modal-buttons">
                 <button onClick={async () => {
-                    console.log(image)
                     if (email.length < 3 || password.length < 3) {
                         return;
                     }
@@ -274,7 +273,6 @@ export default function Modal(props) {
                         body: formData
                     })
                     const data = await response.json()
-                    console.log(data)
                     if (data.error) {
                         setError(true)
                         setErrorMessage(data.error)

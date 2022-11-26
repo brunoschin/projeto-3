@@ -142,9 +142,45 @@ textarea {
     display: flex;
 }
 
+.post-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 40rem;
+    max-height: 60rem;
+}
+
+.post-container h1,
+.post-container p,
+.post-container video,
+.post-container img {
+    max-width: 100%;
+    text-align: justify;
+    max-height: 65%;
+    object-fit: contain;
+}
+
+.posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5rem;
+
+}
+
+.no-posts {
+    width: 100%;
+    text-align: center;
+}
+
 .createPostContainer input,
 .createPostContainer textarea {
     width: 40rem;
+}
+
+.createPostContainer textarea {
+    height: 10rem;
 }
 
 .menu-container button,

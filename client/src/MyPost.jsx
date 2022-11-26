@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Post from "./Post";
 
 export default function MyPost() {
     const [posts, setPosts] = useState([]);
@@ -20,11 +21,9 @@ export default function MyPost() {
             }
         }))
     }, [])
-    return (<>
-        {posts.length > 0 ? posts.map(post => <div key={post._id}>
-            <h1>{post.title}</h1>
-            <p>{post.description}</p>
-            <img alt="preview" src={post.file ? `api/file/id/${post.file}` : '/images/profile-pic-placeholder.webp'} />
-        </div>) : <p>{message}</p>}
-    </>)
+    return (<div className="posts-container">
+        {posts.length > 0 ? posts.map(post =>
+            <Post key={post._id} {...post} />) :
+            <p className="no-posts">{message.startsWith('Error:') ? message.replace('Error:', '') : message}</p>}
+    </div>)
 }

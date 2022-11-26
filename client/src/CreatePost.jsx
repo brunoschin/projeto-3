@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function CreatePost() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [file, setFile] = useState('');
+    const [file, setFile] = useState(undefined);
     const [filePath, setFilePath] = useState('');
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState('');
@@ -17,7 +17,10 @@ export default function CreatePost() {
                 setFile(e.target.files[0]);
                 setPreview(URL.createObjectURL(e.target.files[0]));
             }} />
-            <img alt="preview" className="preview" src={preview || '/images/file-placeholder.png'} />
+            {/* <img alt="preview" className="preview" src={preview || '/images/file-placeholder.png'} /> */}
+            {file && file.type.includes('image') ? <img className="preview" src={preview} alt="preview" /> :
+                file && file.type.includes('video') ? <video className="preview" src={preview} controls /> :
+                    <img alt="preview" className="preview" src={'/images/file-placeholder.png'} />}
             <button type="button" onClick={() => {
                 if (title.length < 3) {
                     setError('O título deve ter no mínimo 3 caracteres');
