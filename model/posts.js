@@ -41,16 +41,17 @@ class Post {
             throw new Error(err);
         }
     }
-    async getPostByTitleORDescription(title, description) {
+    async getPostsBySearch(query) {
+        // get all posts were tile or description contains query
         try {
-            if (!title && !description) {
-                throw new Error('Título e descrição inválidos.');
+            if (!query) {
+                throw new Error('Query inválida.');
             }
-            const post = await Database.get(collection, { title, description });
-            if (post.length == 0) {
-                throw new Error('Post não encontrado.');
+            const posts = await Database.get(collection, { $or: [{ title: { $regex: query, $options: 'i' } }, { description: { $regex: query, $options: 'i' } }] });
+            if (posts.length == 0) {
+                throw new Error('Nenhuma postagem encontrada.');
             }
-            return post[0];
+            return posts;
         } catch (err) {
             throw new Error(err);
         }

@@ -76,8 +76,7 @@ async function getFile(req, res) {
                 return;
             }
             const file = result[0]
-            const contentType = file.filename.split('.')[1]
-            res.contentType(contentType);
+            res.contentType(file.contentType);
         }).finally(() => {
             const bucket = new GridFSBucket(db, {
                 bucketName: "File",

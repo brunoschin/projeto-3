@@ -31,22 +31,25 @@ app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); }
 app.get("/api/file/id/:_id", getFile);
 // app.get("/api/file/:name", getFile);
 
-app.post("/api/user", verifyJWT, async (req, res) => {
+app.post("/api/user", verifyJWT, (req, res) => {
     const { email } = req.body;
     const _id = new ObjectId(req.userId);
     if (!_id || !email) {
         res.status(400).send({ message: "É necessário informar o token e o email." })
         return;
     }
-    const user = await new User().getUser(_id);
-    if (user.length == 0) {
-        res.status(404).send({ message: "Usuário não encontrado." })
-        return;
-    }
-    if (user.email === email) {
-        res.status(200).send({ user, message: "Usuário cadastrado." })
-        return;
-    }
+    new User().getUser(_id).then((result) => {
+        if (result.length == 0) {
+            res.status(404).send({ message: "Usuário não encontrado." })
+            return;
+        }
+        if (result.email === email) {
+            res.status(200).send({ user: result, message: "Usuário cadastrado." })
+            return;
+        }
+    })
+        .catch((err) => res.status(400).json({ error: err.message }));
+
 });
 
 app.post("/api/user/register", upload.single('file'), (req, res) => {
@@ -94,6 +97,14 @@ app.post("/api/post", verifyJWT, upload.single('file'), async (req, res) => {
     try {
         const post = await new Posts(title, description, req.file ? req.file.id : undefined, req.file ? req.file.filename : undefined, req.userId).createPost();
         res.status(200).json({ post });
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+});
+app.get("/api/post/:search", verifyJWT, async (req, res) => {
+    try {
+        const posts = await new Posts().getPostsBySearch(req.params.search);
+        res.status(200).json({ posts });
     } catch (err) {
         res.status(404).json({ error: err.message });
     }
