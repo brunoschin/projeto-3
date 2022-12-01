@@ -31,31 +31,22 @@ async function getAll(collection) {
 }
 
 async function updateOne(collection, query, data) {
-    console.log(collection, query, data)
     const result = await db.collection(collection).updateOne(query, data);
-    console.log(`${result.matchedCount} document(s) matched the query criteria.`);
-    console.log(`${result.modifiedCount} document(s) was/were updated.`);
     return result;
 }
 
 async function updateMany(collection, query, data) {
     const result = await db.collection(collection).updateMany(query, data);
-    console.log(`${result.matchedCount} document(s) matched the query criteria.`);
-    console.log(`${result.modifiedCount} document(s) was/were updated.`);
     return result;
 }
 
 async function deleteOne(collection, query) {
     const result = await db.collection(collection).deleteOne(query);
-
-    console.log(`${result.deletedCount} document(s) was/were deleted.`);
     return result;
 }
 
 async function deleteMany(collection, query) {
     const result = await db.collection(collection).deleteMany(query);
-
-    console.log(`${result.deletedCount} document(s) was/were deleted.`);
     return result;
 
 }

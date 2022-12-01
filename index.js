@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
-const { ObjectId } = require('mongodb');
 
 const User = require('./model/user')
 const Posts = require('./model/posts')
@@ -16,7 +15,9 @@ function verifyJWT(req, res, next) {
 
     jwt.verify(token, SECRET, function (err, decoded) {
         if (err) return res.status(500).json({ auth: false, message: 'Falha ao autenticar token.' });
-        req.userId = decoded.id;
+        req.token = token;
+        req.user = decoded;
+        req.userId = decoded._id;
         next();
     });
 }
@@ -61,15 +62,12 @@ app.post("/api/user/register", upload.single('file'), (req, res) => {
 
 app.post("/api/user/login", (req, res) => {
     const { email, password } = req.body;
-
     new User(undefined, email, password).login()
         .then((result) => {
-            const id = result._id;
-            delete result._id;
             res.status(200).json({
                 user: result,
                 message: "Usuário logado com sucesso.",
-                token: jwt.sign({ id }, SECRET),
+                token: jwt.sign({ ...result }, SECRET),
                 auth: true
             })
         })
@@ -82,8 +80,14 @@ app.post("/api/file/upload", upload.single('file'), (req, res) => {
 });
 app.get("/api/my-posts", verifyJWT, async (req, res) => {
     try {
+        const token = req.token;
         const posts = await new Posts().getPostsByUser(req.userId);
-        res.status(200).json({ posts });
+        await new User().increaseViews(posts.length, req.userId, token);
+        const user = await new User().getUser(req.userId);
+        res.status(200).json({
+            posts,
+            token: jwt.sign({ ...user }, SECRET)
+        });
     } catch (err) {
         res.status(404).json({ error: err.message });
     }
@@ -99,8 +103,14 @@ app.post("/api/post", verifyJWT, upload.single('file'), async (req, res) => {
 });
 app.get("/api/post/:search", verifyJWT, async (req, res) => {
     try {
+        const token = req.token;
         const posts = await new Posts().getPostsBySearch(req.params.search);
-        res.status(200).json({ posts });
+        await new User().increaseViews(posts.length, req.userId, token);
+        const user = await new User().getUser(req.userId);
+        res.status(200).json({
+            posts,
+            token: jwt.sign({ ...user }, SECRET)
+        });
     } catch (err) {
         res.status(404).json({ error: err.message });
     }

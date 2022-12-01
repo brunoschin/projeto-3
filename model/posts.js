@@ -1,5 +1,6 @@
+const { ObjectId } = require('mongodb');
 const Database = require('./database');
-const User = require('./user');
+
 
 const collection = "Post";
 
@@ -13,25 +14,28 @@ class Post {
         this.user = user;
     }
 
-    async getPostById(_id) {
-        try {
-            if (!_id) {
-                throw new Error('ID inválido.');
-            }
-            const post = await Database.get(collection, { _id });
-            if (post.length == 0) {
-                throw new Error('Post não encontrado.');
-            }
-            return post[0];
-        } catch (err) {
-            throw new Error(err);
-        }
-    }
+    // async getPostById(_id) {
+    //     try {
+    //         if (!_id) {
+    //             throw new Error('ID inválido.');
+    //         }
+    //         const post = await Database.get(collection, { _id });
+    //         if (post.length == 0) {
+    //             throw new Error('Post não encontrado.');
+    //         }
+    //         return post[0];
+    //     } catch (err) {
+    //         throw new Error(err);
+    //     }
+    // }
 
     async getPostsByUser(user = this.user) {
         try {
             if (!user) {
                 throw new Error('Usuário inválido.');
+            }
+            if (typeof user !== ObjectId) {
+                user = ObjectId(user);
             }
             const posts = await Database.get(collection, { user: user });
             if (posts.length == 0) {
@@ -58,6 +62,7 @@ class Post {
     }
 
     async createPost() {
+        const User = require('./user')
         try {
             if (!this.title) {
                 throw new Error('Título inválido.');
@@ -72,6 +77,7 @@ class Post {
                 throw new Error('Usuário inválido.');
             } else {
                 const user = await new User().getUser(this.user);
+
                 if (user.length == 0) {
                     throw new Error('Usuário não encontrado.');
                 } else {
@@ -80,6 +86,7 @@ class Post {
                     }
                 }
             }
+            this.user = new ObjectId(this.user);
             const post = await Database.insertOne(collection, this)
             if (!post.acknowledged) {
                 throw new Error('Não foi possível criar a postagem.');
