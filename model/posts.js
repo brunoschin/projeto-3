@@ -1,4 +1,5 @@
 const Database = require('./database');
+const User = require('./user');
 
 const collection = "Post";
 
@@ -42,7 +43,6 @@ class Post {
         }
     }
     async getPostsBySearch(query) {
-        // get all posts were tile or description contains query
         try {
             if (!query) {
                 throw new Error('Query inválida.');
@@ -70,6 +70,15 @@ class Post {
             }
             if (!this.user) {
                 throw new Error('Usuário inválido.');
+            } else {
+                const user = await new User().getUser(this.user);
+                if (user.length == 0) {
+                    throw new Error('Usuário não encontrado.');
+                } else {
+                    if (user.role !== 'admin') {
+                        throw new Error('Usuário não autorizado.');
+                    }
+                }
             }
             const post = await Database.insertOne(collection, this)
             if (!post.acknowledged) {

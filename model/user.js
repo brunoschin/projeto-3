@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const Database = require('./database');
 
 const collection = "User";
@@ -16,6 +17,9 @@ class User {
         try {
             if (!_id) {
                 throw new Error('ID inválido.');
+            }
+            if (typeof _id !== ObjectId) {
+                _id = ObjectId(_id)
             }
             const user = await Database.get(collection, { _id });
             if (user.length == 0) {

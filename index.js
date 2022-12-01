@@ -1,4 +1,3 @@
-const http = require('http');
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -9,7 +8,6 @@ const { ObjectId } = require('mongodb');
 const User = require('./model/user')
 const Posts = require('./model/posts')
 const { getFile, upload } = require('./model/database');
-const Post = require('./model/posts');
 
 const SECRET = 'secret';
 function verifyJWT(req, res, next) {
@@ -29,16 +27,14 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
 app.get("/api/file/id/:_id", getFile);
-// app.get("/api/file/:name", getFile);
 
 app.post("/api/user", verifyJWT, (req, res) => {
     const { email } = req.body;
-    const _id = new ObjectId(req.userId);
-    if (!_id || !email) {
+    if (!req.userId || !email) {
         res.status(400).send({ message: "É necessário informar o token e o email." })
         return;
     }
-    new User().getUser(_id).then((result) => {
+    new User().getUser(req.userId).then((result) => {
         if (result.length == 0) {
             res.status(404).send({ message: "Usuário não encontrado." })
             return;
