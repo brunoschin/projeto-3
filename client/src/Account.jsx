@@ -9,6 +9,8 @@ export default function Account(props) {
                     localStorage.removeItem('email');
                     props.setLogged(false);
                 }}>Sair</button>
+                <span>Posts: {props.user.posts}</span>
+                <span>Views: {props.user.views}</span>
             </div>
         </>
     } else {

@@ -5,7 +5,6 @@ import SearchPosts from "./SearchPosts";
 import MyPost from "./MyPost";
 
 export default function Menu(props) {
-
     const [menu, setMenu] = useState(0);
     return (
         <>
@@ -17,7 +16,7 @@ export default function Menu(props) {
                         <button className={menu === 3 ? "menu-button menu-button-active" : "menu-button"} onClick={() => setMenu(3)}>Minhas publicações</button></> : <></>}
                 </div>
             </div>
-            {menu === 0 ? <SearchGames /> : menu === 1 ? <SearchPosts /> : menu === 2 ? <CreatePost /> : <MyPost />}
+            {menu === 0 ? <SearchGames /> : menu === 1 ? <SearchPosts {...props} /> : menu === 2 ? <CreatePost /> : <MyPost {...props} />}
         </>
     )
 }

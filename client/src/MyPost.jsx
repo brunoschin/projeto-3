@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
 
-export default function MyPost() {
+export default function MyPost(props) {
     const [posts, setPosts] = useState([]);
     const [message, setMessage] = useState('');
+    const token = localStorage.getItem('token')
+    const email = localStorage.getItem('email')
 
     useEffect(() => {
         fetch('/api/my-posts', {
@@ -18,9 +20,29 @@ export default function MyPost() {
             }
             else {
                 setPosts(data.posts)
+                localStorage.setItem('token', data.token)
             }
         }))
     }, [])
+    useEffect(() => {
+        if (email && token && posts) {
+            fetch(`api/user/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/JSON',
+                    'x-access-token': token
+                },
+                body: JSON.stringify({ email })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        return;
+                    }
+                    props.setUser(data.user)
+                })
+        }
+    }, [posts])
     return (<div className="posts-container">
         {posts.length > 0 ? posts.map(post =>
             <Post key={post._id} {...post} />) :

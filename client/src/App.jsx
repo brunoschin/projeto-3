@@ -31,11 +31,11 @@ export default function App() {
 					setUser(data.user)
 				})
 		}
-	}, [email, token])
+	}, [])
 	return (
 		<div className="App">
 			<Header {...{ logged, setLogged, modal, setModal, user }} />
-			{logged ? <Menu {...{ user }}></Menu> : <VideoPlayer />}
+			{logged ? <Menu {...{ user, setUser }}></Menu> : <VideoPlayer />}
 			<Modal {...{ logged, setLogged, modal, setModal, user, setUser }} />
 		</div>
 	);

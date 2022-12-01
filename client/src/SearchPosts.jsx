@@ -1,11 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Post from "./Post";
 
-export default function SearchGames() {
-    const token = localStorage.getItem('token')
+export default function SearchGames(props) {
     const [search, setSearch] = useState("");
     const [posts, setPosts] = useState([]);
     const [errorInput, setErrorInput] = useState("");
+    const token = localStorage.getItem('token')
+    const email = localStorage.getItem('email')
+    useEffect(() => {
+        if (email && token && posts) {
+            fetch(`api/user/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/JSON',
+                    'x-access-token': token
+                },
+                body: JSON.stringify({ email })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        return;
+                    }
+                    props.setUser(data.user)
+                })
+        }
+    }, [posts])
     const searchHandler = async () => {
         try {
             if (search.length < 3) {
@@ -16,7 +36,7 @@ export default function SearchGames() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-access-token': token
+                    'x-access-token': localStorage.getItem('token')
                 }
             })
             const data = await response.json();
@@ -28,6 +48,7 @@ export default function SearchGames() {
                 throw data.error
             }
             setPosts(data.posts);
+            localStorage.setItem('token', data.token);
             return;
         }
         catch (err) {
