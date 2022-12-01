@@ -10,6 +10,7 @@ export default function App() {
 	const email = localStorage.getItem('email')
 	const [logged, setLogged] = useState(false);
 	const [modal, setModal] = useState(0);
+	const [user, setUser] = useState()
 	useEffect(() => {
 		if (email && token) {
 			fetch(`api/user/`, {
@@ -27,14 +28,15 @@ export default function App() {
 						return;
 					}
 					setLogged(true)
+					setUser(data.user)
 				})
 		}
 	}, [email, token])
 	return (
 		<div className="App">
-			<Header {...{ logged, setLogged, modal, setModal }} />
-			{logged ? <Menu></Menu> : <VideoPlayer />}
-			<Modal {...{ logged, setLogged, modal, setModal }} />
+			<Header {...{ logged, setLogged, modal, setModal, user }} />
+			{logged ? <Menu {...{ user }}></Menu> : <VideoPlayer />}
+			<Modal {...{ logged, setLogged, modal, setModal, user, setUser }} />
 		</div>
 	);
 }

@@ -196,11 +196,18 @@ textarea {
     width: fit-content;
     cursor: pointer;
     margin-right: 30px;
+    margin-top: 2rem;
 }
 
 .menu-container button:hover,
 .createPostContainer button:hover {
     background-color: #1E88E5;
+}
+
+.createPostContainer button:disabled {
+    background-color: #848484;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .menu-button-active {
@@ -277,7 +284,7 @@ textarea {
 
 .createPostContainer p {
     position: absolute;
-    top: 0;
+    bottom: 3.1rem;
     color: red;
     font-weight: bolder;
 }

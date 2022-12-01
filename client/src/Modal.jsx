@@ -121,14 +121,29 @@ export default function Modal(props) {
                         return
                     }
                     if (data.token) {
-                        props.setModal(0)
-                        props.setLogged(true)
                         localStorage.setItem('token', data.token)
                         localStorage.setItem('email', email)
+                        fetch(`api/user/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/JSON',
+                                'x-access-token': data.token
+                            },
+                            body: JSON.stringify({ email })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    props.setLogged(false)
+                                    return;
+                                }
+                                props.setLogged(true)
+                                props.setUser(data.user)
+                            })
+                        props.setModal(0)
                         reset()
                     }
                 }} > Entrar</button>
-                {/* <button>Esqueci minha senha</button> */}
             </div>
         </div>
     </div > : props.modal === 2 ? <div className="modal">
@@ -208,6 +223,10 @@ export default function Modal(props) {
             </div>
             <div className="modalInput">
                 <input type="file" accept="image/*" value={image} onChange={e => {
+                    if (e.target.files[0].size > 4.4 * 1024 * 1024) {
+                        setImageError(true)
+                        return;
+                    }
                     setImage(e.target.value)
                     if (e.target.files.length > 0) {
                         setImageFile(e.target.files[0])
@@ -220,7 +239,7 @@ export default function Modal(props) {
                     }
                 }
                 } />
-                {imageError && <div>Selecione uma imagem de perfil</div>}
+                {imageError && <div>Selecione uma imagem de perfil de no máximo 4.4MB</div>}
             </div>
 
             <div className="modalInput radio" >

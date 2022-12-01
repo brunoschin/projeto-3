@@ -1,32 +1,9 @@
-import { useEffect, useState } from "react";
-
 export default function Account(props) {
-    const token = localStorage.getItem('token');
-    const email = localStorage.getItem('email');
-
-    const [user, setUser] = useState({});
-    useEffect(() => {
-        if (email && token) {
-            fetch(`api/user/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/JSON',
-                    'x-access-token': token
-                },
-                body: JSON.stringify({ email })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setUser(data.user)
-                })
-        }
-    }, [email, token])
-
-    if (props.logged && user) {
+    if (props.logged && props.user) {
         return <>
             <div className="accountContainer">
-                <span>{user.name}</span>
-                <img src={user.profilePicture ? `api/file/id/${user.profilePicture}` : '/images/profile-pic-placeholder.webp'} alt="avatar" />
+                <span>{props.user.name}</span>
+                <img src={props.user.profilePicture ? `api/file/id/${props.user.profilePicture}` : '/images/profile-pic-placeholder.webp'} alt="avatar" />
                 <button type="button" onClick={() => {
                     localStorage.removeItem('token');
                     localStorage.removeItem('email');
