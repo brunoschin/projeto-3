@@ -49,6 +49,7 @@ textarea {
     flex-direction: column;
     border-radius: 20px;
     z-index: 90;
+    transform: scale(0.8);
 }
 
 .modal .modal-content-header {
