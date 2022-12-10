@@ -14,8 +14,6 @@ export default function CreatePost() {
             <input type="text" placeholder="Título" value={title} onChange={e => setTitle(e.target.value)} />
             <textarea placeholder="Escreva aqui..." value={description} onChange={e => setDescription(e.target.value)} />
             <input type="file" accept="image/*, video/*" value={filePath} onChange={e => {
-                console.log(e.target.files[0])
-                console.log(e.target.value)
                 setError('')
                 if (e.target.files[0].size > 4.4 * 1024 * 1024) {
                     setError('O arquivo deve ter no máximo 4.4MB')
@@ -68,7 +66,6 @@ export default function CreatePost() {
                     },
                     body: formData
                 }).then(response => response.json().then(data => {
-                    console.log(data)
                     if (data.error) {
                         setError(data.error)
                         setStatus('');
