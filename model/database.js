@@ -1,5 +1,6 @@
 const { MongoClient, ServerApiVersion, GridFSBucket, ObjectId } = require('mongodb');
 const { GridFsStorage } = require("multer-gridfs-storage");
+const util = require('util');
 const multer = require('multer');
 
 const url = 'mongodb+srv://MdbAdmin:uakCmo8W7bQcVlVI@cluster0.nrrlvmq.mongodb.net/Projeto-3'
@@ -106,7 +107,8 @@ const storage = new GridFsStorage({
     }
 });
 
-const upload = multer({ storage });
+const upload = util.promisify(multer({ storage }).single('file'));
+
 
 module.exports = {
     insertOne,

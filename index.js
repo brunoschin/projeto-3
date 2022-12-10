@@ -49,7 +49,7 @@ app.post("/api/user", verifyJWT, (req, res) => {
 
 });
 
-app.post("/api/user/register", upload.single('file'), (req, res) => {
+app.post("/api/user/register", upload, (req, res) => {
     const { name, email, password, role } = req.body
 
     new User(name, email, password, req.file ? req.file.id : undefined, role).register()
@@ -74,10 +74,6 @@ app.post("/api/user/login", (req, res) => {
         .catch((err) => res.status(500).json({ error: err.message, auth: false }))
 });
 
-app.post("/api/file/upload", upload.single('file'), (req, res) => {
-    const { name, site } = req.body;
-    res.json({ name, site });
-});
 app.get("/api/my-posts", verifyJWT, async (req, res) => {
     try {
         const token = req.token;
@@ -92,7 +88,7 @@ app.get("/api/my-posts", verifyJWT, async (req, res) => {
         res.status(404).json({ error: err.message });
     }
 });
-app.post("/api/post", verifyJWT, upload.single('file'), async (req, res) => {
+app.post("/api/post", verifyJWT, upload, async (req, res) => {
     const { title, description } = req.body;
     try {
         const post = await new Posts(title, description, req.file ? req.file.id : undefined, req.file ? req.file.filename : undefined, req.userId).createPost();
