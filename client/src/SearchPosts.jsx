@@ -7,6 +7,7 @@ export default function SearchGames(props) {
     const [errorInput, setErrorInput] = useState("");
     const token = localStorage.getItem('token')
     const email = localStorage.getItem('email')
+    const setUser = props.setUser
     useEffect(() => {
         if (email && token && posts) {
             fetch(`api/user/`, {
@@ -22,10 +23,10 @@ export default function SearchGames(props) {
                     if (data.error) {
                         return;
                     }
-                    props.setUser(data.user)
+                    setUser(data.user)
                 })
         }
-    }, [posts])
+    }, [email, token, posts, setUser])
     const searchHandler = async () => {
         try {
             if (search.length < 3) {

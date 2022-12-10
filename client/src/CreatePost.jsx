@@ -5,27 +5,33 @@ export default function CreatePost() {
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(undefined);
     const [filePath, setFilePath] = useState('');
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState(undefined);
     const [error, setError] = useState('');
     const [status, setStatus] = useState('');
     return (<>
         <div className="createPostContainer">
-            {error !== '' ? <p>{error}</p> : null}
+            {error !== '' ? <p>{error}</p> : <></>}
             <input type="text" placeholder="Título" value={title} onChange={e => setTitle(e.target.value)} />
             <textarea placeholder="Escreva aqui..." value={description} onChange={e => setDescription(e.target.value)} />
             <input type="file" accept="image/*, video/*" value={filePath} onChange={e => {
+                console.log(e.target.files[0])
+                console.log(e.target.value)
                 setError('')
                 if (e.target.files[0].size > 4.4 * 1024 * 1024) {
                     setError('O arquivo deve ter no máximo 4.4MB')
                     setStatus('')
-                    return;
+                    setFile(undefined);
+                    setFilePath('');
+                    setPreview(undefined);
+                } else {
+                    setFilePath(e.target.value);
+                    setFile(e.target.files[0]);
+                    setPreview(URL.createObjectURL(e.target.files[0]));
                 }
-                setFilePath(e.target.value);
-                setFile(e.target.files[0]);
-                setPreview(URL.createObjectURL(e.target.files[0]));
+
             }} />
-            {file && file.type.includes('image') ? <img className="preview" src={preview} alt="preview" /> :
-                file && file.type.includes('video') ? <video className="preview" src={preview} controls /> :
+            {file !== undefined && file.type.includes('image') ? <img className="preview" src={preview} alt="preview" /> :
+                file !== undefined && file.type.includes('video') ? <video className="preview" src={preview} controls /> :
                     <img alt="preview" className="preview" src={'/images/file-placeholder.png'} />}
             <button type="button" disabled={status === 'loading' ? true : false} onClick={() => {
                 setError('');
@@ -46,8 +52,6 @@ export default function CreatePost() {
                     return;
                 }
 
-                console.log(file)
-                // se o arquivo for maior que 4.4MB
                 if (file.size > 4.4 * 1024 * 1024) {
                     setError('O arquivo deve ter no máximo 4.4MB');
                     setStatus('');
@@ -74,14 +78,14 @@ export default function CreatePost() {
 
                     setTitle('');
                     setDescription('');
-                    setFile(null);
+                    setFile(undefined);
                     setFilePath('');
-                    setPreview(null);
+                    setPreview(undefined);
 
                 }))
             }}>Postar</button>
-            {error === '' && status === 'loading' ? <p>Carregando...</p> : null}
-            {error === '' && status === 'success' ? <p>Postado com sucesso!</p> : null}
+            {error === '' && status === 'loading' ? <p>Carregando...</p> : <></>}
+            {error === '' && status === 'success' ? <p>Postado com sucesso!</p> : <></>}
         </div>
     </>)
 }

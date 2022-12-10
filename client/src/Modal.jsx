@@ -17,6 +17,7 @@ export default function Modal(props) {
     const [emailErrorMessage, setEmailErrorMessage] = useState('O email deve ser válido');
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('Ocorreu um erro ao fazer login');
+    const [loading, setLoading] = useState(false);
     function reset() {
         setName('');
         setEmail('');
@@ -98,52 +99,54 @@ export default function Modal(props) {
             {error && <div className="geralError">{errorMessage}</div>}
             <div className="modal-buttons">
                 <button onClick={async () => {
-                    if (email.length < 3 || password.length < 3) {
-                        return;
-                    }
-                    if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/g)) {
-                        return;
-                    }
-
-                    const response = await fetch('api/user/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/JSON'
-                        },
-                        body: JSON.stringify({
-                            email: email, password: password
-                        })
-                    })
-                    const data = await response.json()
-                    if (data.error) {
-                        setError(true)
-                        setErrorMessage(data.error)
-                        return
-                    }
-                    if (data.token) {
-                        localStorage.setItem('token', data.token)
-                        localStorage.setItem('email', email)
-                        fetch(`api/user/`, {
+                    setLoading(true)
+                    if (email.length < 3) {
+                        setEmailError(true)
+                        setEmailErrorMessage('O email deve ter ao menos 3 caracteres')
+                    } else if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/g)) {
+                        setEmailError(true)
+                        setEmailErrorMessage('O email deve ser válido');
+                    } else if (password.length < 3) {
+                        setPassError(true)
+                    } else {
+                        const response = await fetch('api/user/login', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/JSON',
-                                'x-access-token': data.token
+                                'Content-Type': 'application/JSON'
                             },
-                            body: JSON.stringify({ email })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.error) {
-                                    props.setLogged(false)
-                                    return;
-                                }
-                                props.setLogged(true)
-                                props.setUser(data.user)
+                            body: JSON.stringify({
+                                email: email, password: password
                             })
-                        props.setModal(0)
-                        reset()
+                        })
+                        const data = await response.json()
+                        if (data.error) {
+                            setError(true)
+                            setErrorMessage(data.error)
+                        } else if (data.token) {
+                            localStorage.setItem('token', data.token)
+                            localStorage.setItem('email', email)
+                            fetch(`api/user/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/JSON',
+                                    'x-access-token': data.token
+                                },
+                                body: JSON.stringify({ email })
+                            }).then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        props.setLogged(false)
+                                    } else {
+                                        props.setLogged(true)
+                                        props.setUser(data.user)
+                                    }
+                                })
+                            props.setModal(0)
+                            reset()
+                        }
                     }
-                }} > Entrar</button>
+                    setLoading(false)
+                }} disabled={loading}> Entrar</button>
             </div>
         </div>
     </div > : props.modal === 2 ? <div className="modal">
@@ -180,14 +183,14 @@ export default function Modal(props) {
             <div className="modalInput">
                 <input type="text" placeholder="Nome" value={name} onChange={e => {
                     setName(e.target.value)
-                    if (e.target.value === '') {
+                    if (e.target.value.length < 3) {
                         setNameError(true)
                     } else {
                         setNameError(false)
                     }
                 }
                 } />
-                {nameError && <div>Campo nome é obrigatório</div>}
+                {nameError && <div>Campo nome deve conter ao menos 3 caracteres.</div>}
             </div>
             <div className="modalInput">
                 <input type="email" placeholder="Email" value={email} onChange={e => {
@@ -260,52 +263,51 @@ export default function Modal(props) {
             {error && <div className="geralError">{errorMessage}</div>}
             <div className="modal-buttons">
                 <button onClick={async () => {
-                    if (email.length < 3 || password.length < 3) {
-                        return;
-                    }
-                    if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/g)) {
-                        return;
-                    }
-                    if (name === '') {
-                        return;
-                    }
-                    if (!imageFile) {
+                    setLoading(true)
+                    if (name.length < 3) {
+                        setNameError(true)
+                    } else if (email.length < 3) {
+                        setEmailError(true)
+                        setEmailErrorMessage('O email deve ter ao menos 3 caracteres')
+                    } else if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/g)) {
+                        setEmailError(true)
+                        setEmailErrorMessage('O email deve ser válido');
+                    } else if (password.length < 3) {
+                        setPassError(true)
+                    } else if (!imageFile) {
                         setError(true)
                         setErrorMessage('Selecione uma imagem de perfil')
-                        return;
-                    }
-                    if (userType === '') {
+                    } else if (userType === '') {
                         setError(true)
                         setErrorMessage('Selecione um tipo de usuário')
-                        return;
+                    } else {
+                        var formData = new FormData();
+                        formData.append('name', name);
+                        formData.append('email', email);
+                        formData.append('password', password);
+                        formData.append('role', userType);
+                        formData.append('file', imageFile);
+                        const response = await fetch('api/user/register', {
+                            method: 'POST',
+                            headers: {
+                            },
+                            body: formData
+                        })
+                        const data = await response.json()
+                        if (data.error) {
+                            setError(true)
+                            setErrorMessage(data.error)
+                        } else if (data.token) {
+                            props.setModal(0)
+                            props.setLogged(true)
+                            localStorage.setItem('token', data.token)
+                            localStorage.setItem('email', email)
+                        }
+                        reset()
+                        setSetSucessRegister(true)
                     }
-                    var formData = new FormData();
-                    formData.append('name', name);
-                    formData.append('email', email);
-                    formData.append('password', password);
-                    formData.append('role', userType);
-                    formData.append('file', imageFile);
-                    const response = await fetch('api/user/register', {
-                        method: 'POST',
-                        headers: {
-                        },
-                        body: formData
-                    })
-                    const data = await response.json()
-                    if (data.error) {
-                        setError(true)
-                        setErrorMessage(data.error)
-                        return
-                    }
-                    if (data.token) {
-                        props.setModal(0)
-                        props.setLogged(true)
-                        localStorage.setItem('token', data.token)
-                        localStorage.setItem('email', email)
-                    }
-                    reset()
-                    setSetSucessRegister(true)
-                }} >Registrar</button>
+                    setLoading(false)
+                }} disabled={loading}>Registrar</button>
             </div>
             {setSucessRegister &&
                 <div className="modalSucessRegister">

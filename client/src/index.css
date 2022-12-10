@@ -142,6 +142,10 @@ textarea {
     display: flex;
 }
 
+.post-container * {
+    overflow: hidden;
+}
+
 .post-container {
     display: flex;
     flex-direction: column;
@@ -159,6 +163,7 @@ textarea {
     text-align: justify;
     max-height: 65%;
     object-fit: contain;
+    min-height: 4rem;
 }
 
 .posts-container {
@@ -166,7 +171,7 @@ textarea {
     flex-wrap: wrap;
     justify-content: center;
     gap: 5rem;
-
+    padding-top: 3rem;
 }
 
 .no-posts {

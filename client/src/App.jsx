@@ -31,7 +31,7 @@ export default function App() {
 					setUser(data.user)
 				})
 		}
-	}, [])
+	}, [email, token])
 	return (
 		<div className="App">
 			<Header {...{ logged, setLogged, modal, setModal, user }} />
