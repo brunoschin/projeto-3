@@ -293,6 +293,7 @@ export default function Modal(props) {
                             },
                             body: formData
                         })
+                        if (response.status === 500) { setLoading(false) }
                         const data = await response.json()
                         if (data.error) {
                             setError(true)

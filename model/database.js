@@ -95,8 +95,7 @@ async function getFile(req, res) {
 }
 
 const storage = new GridFsStorage({
-    url,
-    options: { useNewUrlParser: true, useUnifiedTopology: true },
+    db,
     file: (req, file) => {
         const currentName = file.originalname.split(' ').join('_')
         return {
